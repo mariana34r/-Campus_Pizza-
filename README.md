@@ -80,9 +80,13 @@ Definir y actualizar el menú con las opciones disponibles.
 
 ## 1. Productos más vendidos
 SELECT p.nombre, SUM(pp.cantidad) AS total_vendido
+
 FROM pedido_productos pp
+
 JOIN productos p ON pp.producto_id = p.id
+
 GROUP BY p.nombre
+
 ORDER BY total_vendido DESC;
 
 ## 2. Total de ingresos generados por cada combo
