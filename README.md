@@ -86,48 +86,55 @@ Definir y actualizar el menú con las opciones disponibles.
    ORDER BY total_vendido DESC;
 
 3. **Total de ingresos generados por cada combo**:
-SELECT c.nombre, SUM(p.total) AS ingresos_totales
-FROM pedidos p
-JOIN pedido_productos pp ON pp.pedido_id = p.id
-JOIN combo_productos cp ON pp.producto_id = cp.producto_id
-JOIN combos c ON c.id = cp.combo_id
-GROUP BY c.nombre;
+   ```sql
+   SELECT c.nombre, SUM(p.total) AS ingresos_totales
+   FROM pedidos p
+   JOIN pedido_productos pp ON pp.pedido_id = p.id
+   JOIN combo_productos cp ON pp.producto_id = cp.producto_id
+   JOIN combos c ON c.id = cp.combo_id
+   GROUP BY c.nombre;
 
-4. **Pedidos realizados para recoger vs. comer en la pizzería**:
-SELECT tipo, COUNT(*) AS total_pedidos
-FROM pedidos
-GROUP BY tipo;
+5. **Pedidos realizados para recoger vs. comer en la pizzería**:
+   ```sql
+   SELECT tipo, COUNT(*) AS total_pedidos
+   FROM pedidos
+   GROUP BY tipo;
 
-5. **Adiciones más solicitadas en pedidos personalizados**:
-SELECT a.nombre, COUNT(pa.adicion_id) AS total_adiciones
-FROM pedido_adiciones pa
-JOIN adiciones a ON pa.adicion_id = a.id
-JOIN pedido_productos pp ON pa.pedido_producto_id = pp.id
-GROUP BY a.nombre
-ORDER BY total_adiciones DESC;
+7. **Adiciones más solicitadas en pedidos personalizados**:
+   ```sql
+   SELECT a.nombre, COUNT(pa.adicion_id) AS total_adiciones
+   FROM pedido_adiciones pa
+   JOIN adiciones a ON pa.adicion_id = a.id
+   JOIN pedido_productos pp ON pa.pedido_producto_id = pp.id
+   GROUP BY a.nombre
+   ORDER BY total_adiciones DESC;
 
-6. **Cantidad total de productos vendidos por categoría**:
-SELECT p.categoria, SUM(pp.cantidad) AS total_vendido
-FROM pedido_productos pp
-JOIN productos p ON pp.producto_id = p.id
-GROUP BY p.categoria;
+9. **Cantidad total de productos vendidos por categoría**:
+   ```sql
+   SELECT p.categoria, SUM(pp.cantidad) AS total_vendido
+   FROM pedido_productos pp
+   JOIN productos p ON pp.producto_id = p.id
+   GROUP BY p.categoria;
 
-7. **Promedio de pizzas pedidas por cliente**:
-SELECT AVG(pizza_count) AS promedio_pizzas
-FROM (
-    SELECT COUNT(*) AS pizza_count
-    FROM pedido_productos pp
-    JOIN productos p ON pp.producto_id = p.id
-    WHERE p.categoria = 'pizza'
-    GROUP BY pp.pedido_id
-) AS subquery;
+11. **Promedio de pizzas pedidas por cliente**:
+   ```sql
+   SELECT AVG(pizza_count) AS promedio_pizzas
+   FROM (
+       SELECT COUNT(*) AS pizza_count
+       FROM pedido_productos pp
+       JOIN productos p ON pp.producto_id = p.id
+       WHERE p.categoria = 'pizza'
+       GROUP BY pp.pedido_id
+   ) AS subquery;
 
-8. **Total de ventas por día de la semana**:
-SELECT DAYNAME(fecha) AS dia_semana, SUM(total) AS total_ventas
-FROM pedidos
-GROUP BY dia_semana;
+13. **Total de ventas por día de la semana**:
+   ```sql
+   SELECT DAYNAME(fecha) AS dia_semana, SUM(total) AS total_ventas
+   FROM pedidos
+   GROUP BY dia_semana;
 
-9. **Cantidad de panzarottis vendidos con extra queso**:
+14. **Cantidad de panzarottis vendidos con extra queso**:
+```sql
 SELECT SUM(pp.cantidad) AS total_panzarottis_con_extra
 FROM pedido_productos pp
 JOIN pedido_adiciones pa ON pp.id = pa.pedido_producto_id
@@ -136,27 +143,31 @@ WHERE pp.producto_id = (SELECT id FROM productos WHERE nombre = 'Panzarotti de Q
 AND a.nombre = 'Extra Queso';
 
 
-10. **Pedidos que incluyen bebidas como parte de un combo**:
+15. **Pedidos que incluyen bebidas como parte de un combo**:
+ ```sql
 SELECT COUNT(DISTINCT pp.pedido_id) AS total_pedidos_con_bebidas
 FROM pedido_productos pp
 JOIN productos p ON pp.producto_id = p.id
 WHERE p.categoria = 'bebida';
 
-11. **Clientes que han realizado más de 5 pedidos en el último mes**:
+16. **Clientes que han realizado más de 5 pedidos en el último mes**:
+ ```sql
 SELECT COUNT(DISTINCT p.id) AS total_clientes
 FROM pedidos p
 WHERE p.fecha >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
 GROUP BY p.id
 HAVING COUNT(*) > 5;
 
-12. **Ingresos totales generados por productos no elaborados (bebidas, postres, etc.)**:
+17. **Ingresos totales generados por productos no elaborados (bebidas, postres, etc.)**:
+ ```sql
 SELECT SUM(total) AS ingresos_no_elaborados
 FROM pedidos p
 JOIN pedido_productos pp ON p.id = pp.pedido_id
 JOIN productos prod ON pp.producto_id = prod.id
 WHERE prod.categoria IN ('bebida', 'postre');
 
-13. **Promedio de adiciones por pedido**:
+18. **Promedio de adiciones por pedido**:
+ ```sql
 SELECT AVG(adiciones_count) AS promedio_adiciones
 FROM (
     SELECT COUNT(*) AS adiciones_count
@@ -164,26 +175,30 @@ FROM (
     GROUP BY pa.pedido_producto_id
 ) AS subquery;
 
-14. **Total de combos vendidos en el último mes**:
+19. **Total de combos vendidos en el último mes**:
+ ```sql
 SELECT COUNT(*) AS total_combos_vendidos
 FROM pedidos p
 JOIN pedido_productos pp ON p.id = pp.pedido_id
 WHERE pp.producto_id IN (SELECT producto_id FROM combo_productos);
 
-15. **Clientes con pedidos tanto para recoger como para consumir en el lugar**:
+20. **Clientes con pedidos tanto para recoger como para consumir en el lugar**:
+ ```sql
 SELECT COUNT(DISTINCT cliente_id) AS total_clientes
 FROM pedidos
 WHERE tipo IN ('recoger', 'consumir')
 GROUP BY cliente_id;
 
-16. **Total de productos personalizados con adiciones**:
+21. **Total de productos personalizados con adiciones**:
+ ```sql
 SELECT COUNT(*) AS total_personalizados
 FROM pedido_productos pp
 LEFT JOIN pedido_adiciones pa ON pp.id = pa.pedido_producto_id
 GROUP BY pp.pedido_id
 HAVING COUNT(pa.adicion_id) > 0;
 
-17. **Pedidos con más de 3 productos diferentes**:
+22. **Pedidos con más de 3 productos diferentes**:
+ ```sql
 SELECT COUNT(DISTINCT pedido_id) AS total_pedidos
 FROM (
     SELECT pedido_id
@@ -192,7 +207,8 @@ FROM (
     HAVING COUNT(DISTINCT producto_id) > 3
 ) AS subquery;
 
-18. **Promedio de ingresos generados por día**:
+23. **Promedio de ingresos generados por día**:
+ ```sql
 SELECT AVG(dia_ingresos.total_dia) AS promedio_ingresos
 FROM (
     SELECT DATE(fecha) AS dia, SUM(total) AS total_dia
@@ -200,7 +216,8 @@ FROM (
     GROUP BY dia
 ) AS dia_ingresos;
 
-19. **Clientes que han pedido pizzas con adiciones en más del 50% de sus pedidos**:
+24. **Clientes que han pedido pizzas con adiciones en más del 50% de sus pedidos**:
+ ```sql
 SELECT COUNT(DISTINCT pedido_id) AS total_clientes
 FROM pedido_productos pp
 JOIN pedido_adiciones pa ON pp.id = pa.pedido_producto_id
@@ -209,12 +226,14 @@ WHERE p.categoria = 'pizza'
 GROUP BY pp.pedido_id
 HAVING COUNT(pa.adicion_id) > COUNT(pp.id) / 2;
 
-20. **Porcentaje de ventas provenientes de productos no elaborados**:
+25. **Porcentaje de ventas provenientes de productos no elaborados**:
+ ```sql
 SELECT (SUM(CASE WHEN p.categoria IN ('bebida', 'postre') THEN pp.cantidad ELSE 0 END) / SUM(pp.cantidad)) * 100 AS porcentaje_no_elaborados
 FROM pedido_productos pp
 JOIN productos p ON pp.producto_id = p.id;
 
-21. **Día de la semana con mayor número de pedidos para recoger**:
+26. **Día de la semana con mayor número de pedidos para recoger**:
+ ```sql
 SELECT DAYNAME(fecha) AS dia_semana, COUNT(*) AS total_pedidos
 FROM pedidos
 WHERE tipo = 'recoger'
