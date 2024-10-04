@@ -78,12 +78,12 @@ Definir y actualizar el menú con las opciones disponibles.
 ## Consultas 🎉:
 
 1. **Productos más vendidos**:
-```sql
-SELECT p.nombre, SUM(pp.cantidad) AS total_vendido
-FROM pedido_productos pp
-JOIN productos p ON pp.producto_id = p.id
-GROUP BY p.nombre
-ORDER BY total_vendido DESC;
+   ```sql
+   SELECT p.nombre, SUM(pp.cantidad) AS total_vendido
+   FROM pedido_productos pp
+   JOIN productos p ON pp.producto_id = p.id
+   GROUP BY p.nombre
+   ORDER BY total_vendido DESC;
 
 3. **Total de ingresos generados por cada combo**:
 SELECT c.nombre, SUM(p.total) AS ingresos_totales
